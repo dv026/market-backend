@@ -13,6 +13,9 @@ import { dbConnector } from './db-connector';
 import { RequestModel } from './models/request-model';
 import { GameModel } from './models/game-model';
 import { UserModel } from './models/user-model';
+import { purchaseController } from './controllers/purchase-controller';
+import { statsController } from './controllers/stats-controller';
+import { FeeModel } from './models/purchase-model';
 const TelegramApi = require('node-telegram-bot-api');
 
 const app = express();
@@ -27,31 +30,165 @@ const bot = new TelegramApi(telegramToken, { polling: true });
 // to allow every origin to connect
 app.use(
   cors({
-    origin: 'localhost:5173'
+    // origin: 'localhost:5173'
+    origin: '*'
   })
 );
 // get body from request
 app.use(express.json());
 app.use(errorMiddleware);
 
-app.get(
-  routes.request.get,
+// app.get(
+//   routes.request.get,
+//   tryCatch(async (req, res) => {
+//     return res.json('success');
+//   })
+// );
+
+// app.post(
+//   routes.request.create,
+//   tryCatch(async (req, res) => {
+//     const { name } = req.body;
+//     const { id } = req.params;
+
+//     const user = await requestController.update({
+//       id,
+//       name
+//     });
+//     return res.json(user);
+//   })
+// );
+
+app.put(
+  routes.purchase.update,
   tryCatch(async (req, res) => {
-    return res.json('success');
+    const purchase = req.body;
+    const { id } = req.params;
+
+    console.log('purchase', purchase);
+    const user = await purchaseController.update({ id, ...purchase });
+    return res.json(user);
+  })
+);
+
+app.patch(
+  routes.purchase.status.edit,
+  tryCatch(async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    const user = await purchaseController.updateStatus({
+      id,
+      status
+    });
+    return res.json(user);
+  })
+);
+
+app.patch(
+  routes.purchase.partialUpdate,
+  tryCatch(async (req, res) => {
+    const data = req.body;
+    const { id } = req.params;
+
+    const user = await purchaseController.partialUpdate({
+      id,
+      ...data
+    });
+    return res.json(user);
+  })
+);
+
+app.get(
+  routes.purchase.depositBack,
+  tryCatch(async (req, res) => {
+    const {} = req.body;
+    const { id } = req.params;
+
+    const user = await purchaseController.partialUpdate({
+      id,
+      deposit: {
+        returned: true
+      } as any
+    });
+    return res.json(user);
+  })
+);
+
+app.get(
+  routes.purchase.fakeFeeBack,
+  tryCatch(async (req, res) => {
+    const {} = req.body;
+    const { id } = req.params;
+
+    const user = await purchaseController.partialUpdate({
+      id,
+      fakeFee: {
+        returned: true
+      } as any
+    });
+    return res.json(user);
+  })
+);
+
+app.get(
+  routes.purchase.commissionBack,
+  tryCatch(async (req, res) => {
+    const {} = req.body;
+    const { id } = req.params;
+
+    const user = await purchaseController.partialUpdate({
+      id,
+      commission: {
+        returned: true
+      } as any
+    });
+    return res.json(user);
   })
 );
 
 app.post(
-  routes.request.create,
+  routes.purchase.create,
   tryCatch(async (req, res) => {
-    const { name } = req.body;
-    const { id } = req.params;
+    const data = req.body;
 
-    const user = await requestController.update({
-      id,
-      name
-    });
-    return res.json(user);
+    const purchase = await purchaseController.create(data);
+    return res.json(purchase);
+  })
+);
+
+app.get(
+  routes.purchase.list,
+  tryCatch(async (req, res) => {
+    const purchase = await purchaseController.getList();
+    return res.json(purchase);
+  })
+);
+
+app.get(
+  routes.purchase.get,
+  tryCatch(async (req, res) => {
+    const { id } = req.params;
+    const purchase = await purchaseController.get(id);
+    return res.json(purchase);
+  })
+);
+
+app.delete(
+  routes.purchase.delete,
+  tryCatch(async (req, res) => {
+    const { id } = req.params;
+    const purchase = await purchaseController.delete(id);
+    return res.json(purchase);
+  })
+);
+
+// STATS
+app.get(
+  routes.stats.get,
+  tryCatch(async (req, res) => {
+    const stats = await statsController.getStats();
+    return res.json(stats);
   })
 );
 
