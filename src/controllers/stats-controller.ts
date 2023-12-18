@@ -61,7 +61,14 @@ class StatsController {
     });
     const userProfit = profit / 2;
     const growPercent = Math.floor((allEarnedMoney / allSpentMoney) * 100) || 0;
-    return { purchaseCount, moneyInDeel, profit, salesCount, userProfit, growPercent };
+    return {
+      purchaseCount,
+      moneyInDeel: Math.floor(moneyInDeel),
+      profit,
+      salesCount,
+      userProfit,
+      growPercent
+    };
   }
 }
 
