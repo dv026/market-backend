@@ -52,7 +52,7 @@ class StatsController {
         purchaseCount++;
 
         allSpentMoney += moneySpentForPurchase;
-        profit += p.soldPrice - moneySpentForPurchase;
+        profit += Math.floor(p.soldPrice - moneySpentForPurchase);
         console.log('profit', profit);
         console.log('profit / 2', profit / 2);
         salesCount++;
