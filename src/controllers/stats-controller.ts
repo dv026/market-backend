@@ -12,15 +12,20 @@ class StatsController {
     let moneyInDeel = 0;
     let salesCount = 0;
     let profit = 0;
-    let dimaProfit = 0;
     let allSpentMoney = 0;
     let allEarnedMoney = 0;
     console.log('allPurchases', allPurchases);
     allPurchases.forEach((p) => {
-      // если депозит вернули, не добавляем его не включаем
-      const deposit = p.deposit.returned ? 0 : calculatePercent(p.deposit.rate, p.price);
-      const fakeFee = p.fakeFee.returned ? 0 : calculatePercent(p.fakeFee.rate, p.price);
-      const commission = p.commission.returned ? 0 : calculatePercent(p.commission.rate, p.price);
+      let deposit = 0;
+      let fakeFee = 0;
+      let commission = 0;
+      console.log(p.type);
+      if (p.purchaseType === 'auction') {
+        // если депозит вернули, не добавляем его не включаем
+        deposit = p.deposit.returned ? 0 : calculatePercent(p.deposit.rate, p.price);
+        fakeFee = p.fakeFee.returned ? 0 : calculatePercent(p.fakeFee.rate, p.price);
+        commission = p.commission.returned ? 0 : calculatePercent(p.commission.rate, p.price);
+      }
       const extraInfoMoney = p.extraInfo?.reduce((amount, { value }) => (amount += value), 0) || 0;
 
       console.log('extrra', extraInfoMoney);
@@ -34,7 +39,7 @@ class StatsController {
         p.status === PurchaseStatuses.DepositPaid ||
         p.status === PurchaseStatuses.Canceled
       ) {
-        moneyInDeel += deposit + fakeFee + commission;
+        moneyInDeel += deposit + fakeFee + commission + extraInfoMoney;
       } else if (
         p.status === PurchaseStatuses.Paid ||
         p.status === PurchaseStatuses.Saling ||
@@ -42,19 +47,21 @@ class StatsController {
       ) {
         purchaseCount++;
         // не добавляем депозит, тк он идетв счет стоимости
-        moneyInDeel += p.price + fakeFee + commission;
+        moneyInDeel += p.price + fakeFee + commission + extraInfoMoney;
       } else if (p.status === PurchaseStatuses.Completed) {
         purchaseCount++;
 
         allSpentMoney += moneySpentForPurchase;
         profit += p.soldPrice - moneySpentForPurchase;
-        dimaProfit += profit / 2;
+        console.log('profit', profit);
+        console.log('profit / 2', profit / 2);
         salesCount++;
         allEarnedMoney += profit;
       }
     });
+    const userProfit = profit / 2;
     const growPercent = Math.floor((allEarnedMoney / allSpentMoney) * 100) || 0;
-    return { purchaseCount, moneyInDeel, profit, salesCount, dimaProfit, growPercent };
+    return { purchaseCount, moneyInDeel, profit, salesCount, userProfit, growPercent };
   }
 }
 

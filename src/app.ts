@@ -199,19 +199,19 @@ const server = app.listen(port, async () => {
   console.log('server started');
 });
 
-const io = socket(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
+// const io = socket(server, {
+//   cors: {
+//     origin: '*',
+//     methods: ['GET', 'POST']
+//   }
+// });
 
-io.on('connection', (socket) => {
-  socket.on('new_message', (data) => {
-    console.log('emit');
-    io.emit('new_message_server', 'I got your message - ' + data.message);
-  });
-});
+// io.on('connection', (socket) => {
+//   // socket.on('new_message', (data) => {
+//   //   console.log('emit');
+//   //   io.emit('new_message_server', 'I got your message - ' + data.message);
+//   // });
+// });
 
 const request: RequestModel = {} as RequestModel;
 request.game = {} as GameModel;
