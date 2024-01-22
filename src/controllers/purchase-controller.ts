@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { dbConnector } from '../db-connector';
 import { CarModel, PurchaseModel } from '../models/purchase-model';
 import { PurchaseStatuses } from '../types';
+import { statsService } from '../services/stats-service';
 
 class PurchaseController {
   constructor() {}
@@ -11,7 +12,16 @@ class PurchaseController {
   }
 
   async getList() {
-    return dbConnector.purchases.find().limit(10).toArray();
+    const purchases = await dbConnector.purchases.find().limit(10).toArray();
+    const enrichedPurchases = purchases.map((p) => {
+      const { profit } = statsService.getStats(p)
+      return {
+        ...p,
+        profit
+      }
+    })
+
+    return enrichedPurchases
   }
 
   async delete(id: string) {

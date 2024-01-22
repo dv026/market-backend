@@ -1,4 +1,5 @@
 import { dbConnector } from '../db-connector';
+import { statsService } from '../services/stats-service';
 import { PurchaseStatuses } from '../types';
 import { calculatePercent } from './../utils/calculate-percent';
 
@@ -14,56 +15,24 @@ class StatsController {
     let profit = 0;
     let allSpentMoney = 0;
     let allEarnedMoney = 0;
-    console.log('allPurchases', allPurchases);
+    let userProfit = 0
+
     allPurchases.forEach((p) => {
-      let deposit = 0;
-      let fakeFee = 0;
-      let commission = 0;
-      console.log(p.type);
-      if (p.purchaseType === 'auction') {
-        // если депозит вернули, не добавляем его не включаем
-        deposit = p.deposit.returned ? 0 : calculatePercent(p.deposit.rate, p.price);
-        fakeFee = p.fakeFee.returned ? 0 : calculatePercent(p.fakeFee.rate, p.price);
-        commission = p.commission.returned ? 0 : calculatePercent(p.commission.rate, p.price);
-      }
-      const extraInfoMoney = p.extraInfo?.reduce((amount, { value }) => (amount += value), 0) || 0;
+      const { purchaseCount: purchaseCountElement, moneyInDeel: moneyInDeelElement, salesCount: salesCountElement, profit: profitElement, allSpentMoney: allSpentMoneyElement, allEarnedMoney: allEarnedMoneyElement, userProfit: userProfitElement } = statsService.getStats(p)
+      purchaseCount += purchaseCountElement
+      moneyInDeel += moneyInDeelElement
+      salesCount += salesCountElement
+      profit += profitElement
+      allSpentMoney += allSpentMoneyElement
+      allEarnedMoney += allEarnedMoneyElement
+      userProfit += userProfitElement
+    })
 
-      console.log('extrra', extraInfoMoney);
-
-      const moneySpentForPurchase = p.price + commission + fakeFee + extraInfoMoney;
-      console.log('moneySpentForPurchase', moneySpentForPurchase);
-
-      if (p.status === PurchaseStatuses.Future) {
-        //nothing
-      } else if (
-        p.status === PurchaseStatuses.DepositPaid ||
-        p.status === PurchaseStatuses.Canceled
-      ) {
-        moneyInDeel += deposit + fakeFee + commission + extraInfoMoney;
-      } else if (
-        p.status === PurchaseStatuses.Paid ||
-        p.status === PurchaseStatuses.Saling ||
-        p.status === PurchaseStatuses.UnderCourtConsidiration
-      ) {
-        purchaseCount++;
-        // не добавляем депозит, тк он идетв счет стоимости
-        moneyInDeel += p.price + fakeFee + commission + extraInfoMoney;
-      } else if (p.status === PurchaseStatuses.Completed) {
-        purchaseCount++;
-
-        allSpentMoney += moneySpentForPurchase;
-        profit += Math.floor(p.soldPrice - moneySpentForPurchase);
-        console.log('profit', profit);
-        console.log('profit / 2', profit / 2);
-        salesCount++;
-        allEarnedMoney += profit;
-      }
-    });
-    const userProfit = profit / 2;
     const growPercent = Math.floor((allEarnedMoney / allSpentMoney) * 100) || 0;
+  
     return {
       purchaseCount,
-      moneyInDeel: Math.floor(moneyInDeel),
+      moneyInDeel,
       profit,
       salesCount,
       userProfit,
