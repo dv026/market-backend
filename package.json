@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "tsc",
-    "build:render": "npm i && npm run build"
+    "build:render": "npm i && npm run build",
+    "prettier": "prettier . --write"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +14,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.9.4",
     "nodemon": "^3.0.1",
+    "prettier": "^3.2.4",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
   },
@@ -21,9 +23,6 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mongodb": "^6.3.0",
-    "node": "^16",
-    "node-telegram-bot-api": "^0.64.0",
-    "prettier": "^3.2.4",
-    "socket.io": "^4.7.2"
+    "node": "^16"
   }
 }
