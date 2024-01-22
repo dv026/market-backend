@@ -1,9 +1,9 @@
-import { GameModel } from './game-model';
-import { UserModel } from './user-model';
+import { GameModel } from './game-model'
+import { UserModel } from './user-model'
 
 export interface RequestModel {
-  game: GameModel;
+  game: GameModel
   // currency: string;
-  amount: string;
-  user: UserModel;
+  amount: string
+  user: UserModel
 }

@@ -1,4 +1,4 @@
-export type Nullable<T> = T | null | undefined;
+export type Nullable<T> = T | null | undefined
 
 export enum PurchaseStatuses {
   Future = 'future',
@@ -7,5 +7,5 @@ export enum PurchaseStatuses {
   Paid = 'paid',
   UnderCourtConsidiration = 'underCourtConsideration',
   Saling = 'saling',
-  Completed = 'completed'
+  Completed = 'completed',
 }

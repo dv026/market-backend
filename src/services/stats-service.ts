@@ -1,6 +1,6 @@
-import { PurchaseModel } from "../models/purchase-model";
-import { PurchaseStatuses } from "../types";
-import { calculatePercent } from "../utils/calculate-percent";
+import { PurchaseModel } from '../models/purchase-model'
+import { PurchaseStatuses } from '../types'
+import { calculatePercent } from '../utils/calculate-percent'
 
 class StatsService {
   getStats(p: PurchaseModel): {
@@ -21,21 +21,27 @@ class StatsService {
     let salesCount = 0
     let allEarnedMoney = 0
 
-
     // vars for calculations
-    let deposit = 0;
-    let fakeFee = 0;
-    let commission = 0;
+    let deposit = 0
+    let fakeFee = 0
+    let commission = 0
     if (p.purchaseType === 'auction') {
       // если депозит вернули, не добавляем его не включаем
-      deposit = p.deposit.returned ? 0 : calculatePercent(p.deposit.rate, p.price);
-      fakeFee = p.fakeFee.returned ? 0 : calculatePercent(p.fakeFee.rate, p.price);
-      commission = p.commission.returned ? 0 : calculatePercent(p.commission.rate, p.price);
+      deposit = p.deposit.returned
+        ? 0
+        : calculatePercent(p.deposit.rate, p.price)
+      fakeFee = p.fakeFee.returned
+        ? 0
+        : calculatePercent(p.fakeFee.rate, p.price)
+      commission = p.commission.returned
+        ? 0
+        : calculatePercent(p.commission.rate, p.price)
     }
-    const extraInfoMoney = p.extraInfo?.reduce((amount, { value }) => (amount += value), 0) || 0;
+    const extraInfoMoney =
+      p.extraInfo?.reduce((amount, { value }) => (amount += value), 0) || 0
 
-
-    const moneySpentForPurchase = p.price + commission + fakeFee + extraInfoMoney;
+    const moneySpentForPurchase =
+      p.price + commission + fakeFee + extraInfoMoney
 
     if (p.status === PurchaseStatuses.Future) {
       //nothing
@@ -43,25 +49,25 @@ class StatsService {
       p.status === PurchaseStatuses.DepositPaid ||
       p.status === PurchaseStatuses.Canceled
     ) {
-      moneyInDeel += deposit + fakeFee + commission + extraInfoMoney;
+      moneyInDeel += deposit + fakeFee + commission + extraInfoMoney
     } else if (
       p.status === PurchaseStatuses.Paid ||
       p.status === PurchaseStatuses.Saling ||
       p.status === PurchaseStatuses.UnderCourtConsidiration
     ) {
-      purchaseCount++;
+      purchaseCount++
       // не добавляем депозит, тк он идетв счет стоимости
-      moneyInDeel += p.price + fakeFee + commission + extraInfoMoney;
+      moneyInDeel += p.price + fakeFee + commission + extraInfoMoney
     } else if (p.status === PurchaseStatuses.Completed) {
-      purchaseCount++;
+      purchaseCount++
 
-      allSpentMoney += moneySpentForPurchase;
-      profit += Math.floor(p.soldPrice - moneySpentForPurchase);
-      salesCount++;
-      allEarnedMoney += profit;
+      allSpentMoney += moneySpentForPurchase
+      profit += Math.floor(p.soldPrice - moneySpentForPurchase)
+      salesCount++
+      allEarnedMoney += profit
     }
 
-    const growPercent = Math.floor((allEarnedMoney / allSpentMoney) * 100) || 0;
+    const growPercent = Math.floor((allEarnedMoney / allSpentMoney) * 100) || 0
     return {
       moneyInDeel: Math.floor(moneyInDeel),
       purchaseCount,
@@ -70,7 +76,7 @@ class StatsService {
       salesCount,
       allEarnedMoney,
       userProfit: profit / 2,
-      growPercent
+      growPercent,
     }
   }
 }

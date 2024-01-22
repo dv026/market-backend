@@ -1,4 +1,4 @@
 export interface GameModel {
-  name: string;
-  acoountId: string;
+  name: string
+  acoountId: string
 }

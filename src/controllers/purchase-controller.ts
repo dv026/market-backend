@@ -1,23 +1,23 @@
-import { ObjectId } from 'mongodb';
-import { dbConnector } from '../db-connector';
-import { CarModel, PurchaseModel } from '../models/purchase-model';
-import { PurchaseStatuses } from '../types';
-import { statsService } from '../services/stats-service';
+import { ObjectId } from 'mongodb'
+import { dbConnector } from '../db-connector'
+import { CarModel, PurchaseModel } from '../models/purchase-model'
+import { PurchaseStatuses } from '../types'
+import { statsService } from '../services/stats-service'
 
 class PurchaseController {
   constructor() {}
 
   async get(id: string) {
-    return dbConnector.purchases.findOne({ _id: new ObjectId(id) });
+    return dbConnector.purchases.findOne({ _id: new ObjectId(id) })
   }
 
   async getList() {
-    const purchases = await dbConnector.purchases.find().limit(10).toArray();
+    const purchases = await dbConnector.purchases.find().limit(10).toArray()
     const enrichedPurchases = purchases.map((p) => {
       const { profit } = statsService.getStats(p)
       return {
         ...p,
-        profit
+        profit,
       }
     })
 
@@ -25,7 +25,7 @@ class PurchaseController {
   }
 
   async delete(id: string) {
-    return dbConnector.purchases.deleteOne({ _id: new ObjectId(id) });
+    return dbConnector.purchases.deleteOne({ _id: new ObjectId(id) })
   }
 
   async update({
@@ -37,21 +37,32 @@ class PurchaseController {
     model,
     commission,
     deposit,
-    purchaseType
+    purchaseType,
   }: CarModel) {
     return dbConnector.purchases.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { year, price, brand, mileage, model, deposit, commission, purchaseType } }
-    );
+      {
+        $set: {
+          year,
+          price,
+          brand,
+          mileage,
+          model,
+          deposit,
+          commission,
+          purchaseType,
+        },
+      }
+    )
   }
 
-  hasFakeFee = (rate: number) => rate !== 0;
+  hasFakeFee = (rate: number) => rate !== 0
 
   async updateStatus({ id, status }: Partial<CarModel>) {
-    const purchase = await this.get(id);
+    const purchase = await this.get(id)
     let enrichedPurchase: Partial<CarModel> = {
-      status
-    };
+      status,
+    }
     if (status === PurchaseStatuses.DepositPaid) {
       // enrichedPurchase.deposit = {
       //   ...purchase.deposit,
@@ -59,32 +70,32 @@ class PurchaseController {
       // };
       enrichedPurchase.fakeFee = {
         ...purchase.fakeFee,
-        canReturn: this.hasFakeFee(purchase.fakeFee.rate)
-      };
+        canReturn: this.hasFakeFee(purchase.fakeFee.rate),
+      }
     }
 
     if (status === PurchaseStatuses.Canceled) {
       enrichedPurchase.commission = {
         ...purchase.deposit,
-        canReturn: true
-      };
+        canReturn: true,
+      }
       if (!purchase.deposit.returned) {
         enrichedPurchase.deposit = {
           ...purchase.deposit,
-          canReturn: true
-        };
+          canReturn: true,
+        }
       }
       if (!purchase.fakeFee.returned) {
         enrichedPurchase.fakeFee = {
           ...purchase.fakeFee,
-          canReturn: this.hasFakeFee(purchase.fakeFee.rate)
-        };
+          canReturn: this.hasFakeFee(purchase.fakeFee.rate),
+        }
       }
     }
     return dbConnector.purchases.updateOne(
       { _id: new ObjectId(id) },
       { $set: { ...enrichedPurchase } }
-    );
+    )
   }
 
   async returnFakeDeposit({ id }: Pick<CarModel, 'id'>) {
@@ -93,11 +104,11 @@ class PurchaseController {
       {
         $set: {
           fakeFee: {
-            returned: true
-          } as any
-        }
+            returned: true,
+          } as any,
+        },
       }
-    );
+    )
   }
 
   async returnDeposit({ id }: Pick<CarModel, 'id'>) {
@@ -106,15 +117,18 @@ class PurchaseController {
       {
         $set: {
           deposit: {
-            returned: true
-          } as any
-        }
+            returned: true,
+          } as any,
+        },
       }
-    );
+    )
   }
 
   async partialUpdate({ id, ...data }: Partial<CarModel>) {
-    return dbConnector.purchases.updateOne({ _id: new ObjectId(id) }, { $set: { ...data } });
+    return dbConnector.purchases.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { ...data } }
+    )
   }
 
   // async updateSoldPrice({ id, soldPrice }: Partial<CarModel>) {
@@ -126,22 +140,22 @@ class PurchaseController {
       purchase.deposit = {
         ...purchase.deposit,
         canReturn: false,
-        returned: false
-      };
+        returned: false,
+      }
       purchase.fakeFee = {
         ...purchase.fakeFee,
         canReturn: false,
-        returned: false
-      };
+        returned: false,
+      }
       purchase.commission = {
         ...purchase.commission,
         canReturn: false,
-        returned: false
-      };
+        returned: false,
+      }
 
-      return dbConnector.purchases.insertOne(purchase);
+      return dbConnector.purchases.insertOne(purchase)
     }
   }
 }
 
-export const purchaseController = new PurchaseController();
+export const purchaseController = new PurchaseController()
