@@ -14,6 +14,4 @@ export const errorMiddleware = (error, req, res, next) => {
   console.log(errorObj)
 
   return res.status(400).json(errorObj)
-
-  return res.status(500).send('Something went wrong')
 }
