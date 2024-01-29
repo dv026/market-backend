@@ -10,6 +10,7 @@ class StatsService {
     salesCount: number
     userProfit: number
     growPercent: number
+    allSpentMoney: number
   } {
     //return values
     let moneyInDeelNow = 0
@@ -75,6 +76,7 @@ class StatsService {
       salesCount,
       userProfit: profit / 2,
       growPercent,
+      allSpentMoney,
     }
   }
 }

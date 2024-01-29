@@ -23,12 +23,14 @@ class StatsController {
         salesCount: salesCountElement,
         profit: profitElement,
         userProfit: userProfitElement,
+        allSpentMoney: allSpentMoneyElement,
       } = statsService.getStats(p)
       purchaseCount += purchaseCountElement
       moneyInDeelNow += moneyInDeelNowElement
       salesCount += salesCountElement
       profit += profitElement
       userProfit += userProfitElement
+      allSpentMoney += allSpentMoneyElement
     })
 
     const growPercent = Math.floor((profit / allSpentMoney) * 100) || 0
