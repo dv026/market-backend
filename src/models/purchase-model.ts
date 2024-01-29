@@ -13,17 +13,30 @@ export interface FeeModel {
   returned: Nullable<boolean>
 }
 
+export type PurchaseStatuse =
+  | 'future'
+  | 'canceled'
+  | 'depositPaid'
+  | 'paid'
+  | 'underCourtConsideration'
+  | 'saling'
+  | 'completed'
+
+export type PurchaseType = 'commission' | 'auction'
+
+export type PurchaseCategory = 'appartment' | 'car'
+
 export interface PurchaseModel {
   id: string
   price: Nullable<number>
-  type: string
-  purchaseType: string
-  status: string
-  soldPrice: Nullable<number>
-  commission: FeeModel
-  deposit: FeeModel
-  fakeFee: FeeModel
-  extraInfo: ExtraInfo[]
+  category: PurchaseCategory
+  type: PurchaseType
+  status: PurchaseStatuse
+  soldPrice?: Nullable<number>
+  commission?: FeeModel
+  deposit?: FeeModel
+  fakeFee?: FeeModel
+  extraInfo?: ExtraInfo[]
 }
 
 export interface ExtraInfo {

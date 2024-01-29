@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb'
 import { dbConnector } from '../db-connector'
 import { CarModel, PurchaseModel } from '../models/purchase-model'
 import { PurchaseStatuses } from '../types'
-import { statsService } from '../services/stats-service'
+import { statsService } from '../services/stats/stats-service'
 
 class PurchaseController {
   constructor() {}
@@ -37,7 +37,7 @@ class PurchaseController {
     model,
     commission,
     deposit,
-    purchaseType,
+    type,
   }: CarModel) {
     return dbConnector.purchases.updateOne(
       { _id: new ObjectId(id) },
@@ -50,7 +50,7 @@ class PurchaseController {
           model,
           deposit,
           commission,
-          purchaseType,
+          type,
         },
       }
     )
@@ -136,7 +136,7 @@ class PurchaseController {
   // }
 
   async create(purchase: CarModel) {
-    if (purchase.type === 'car') {
+    if (purchase.category === 'car') {
       purchase.deposit = {
         ...purchase.deposit,
         canReturn: false,

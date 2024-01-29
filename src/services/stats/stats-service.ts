@@ -1,31 +1,29 @@
-import { PurchaseModel } from '../models/purchase-model'
-import { PurchaseStatuses } from '../types'
-import { calculatePercent } from '../utils/calculate-percent'
+import { PurchaseModel } from '../../models/purchase-model'
+import { PurchaseStatuses } from '../../types'
+import { calculatePercent } from '../../utils/calculate-percent'
 
 class StatsService {
   getStats(p: PurchaseModel): {
-    moneyInDeel: number
+    moneyInDeelNow: number
     purchaseCount: number
-    allSpentMoney: number
     profit: number
     salesCount: number
-    allEarnedMoney: number
     userProfit: number
     growPercent: number
   } {
     //return values
-    let moneyInDeel = 0
+    let moneyInDeelNow = 0
     let purchaseCount = 0
     let allSpentMoney = 0
     let profit = 0
     let salesCount = 0
-    let allEarnedMoney = 0
+    let growPercent = 0
 
     // vars for calculations
     let deposit = 0
     let fakeFee = 0
     let commission = 0
-    if (p.purchaseType === 'auction') {
+    if (p.type === 'auction') {
       // если депозит вернули, не добавляем его не включаем
       deposit = p.deposit.returned
         ? 0
@@ -49,32 +47,32 @@ class StatsService {
       p.status === PurchaseStatuses.DepositPaid ||
       p.status === PurchaseStatuses.Canceled
     ) {
-      moneyInDeel += deposit + fakeFee + commission + extraInfoMoney
+      // TODO: check if it's ok for 'auction' type
+      moneyInDeelNow += deposit + fakeFee + commission
     } else if (
       p.status === PurchaseStatuses.Paid ||
       p.status === PurchaseStatuses.Saling ||
       p.status === PurchaseStatuses.UnderCourtConsidiration
     ) {
       purchaseCount++
-      // не добавляем депозит, тк он идетв счет стоимости
-      moneyInDeel += p.price + fakeFee + commission + extraInfoMoney
+      // не добавляем депозит, тк он идет в счет стоимости
+      moneyInDeelNow += moneySpentForPurchase
     } else if (p.status === PurchaseStatuses.Completed) {
       purchaseCount++
 
+      // используем allSpentMoney, только чтобы в случае успешной продажи
+      // тк с его помощью считаем процент заработка от растрат
       allSpentMoney += moneySpentForPurchase
       profit += Math.floor(p.soldPrice - moneySpentForPurchase)
       salesCount++
-      allEarnedMoney += profit
+      growPercent = Math.floor((profit / allSpentMoney) * 100) || 0
     }
 
-    const growPercent = Math.floor((allEarnedMoney / allSpentMoney) * 100) || 0
     return {
-      moneyInDeel: Math.floor(moneyInDeel),
+      moneyInDeelNow: Math.floor(moneyInDeelNow),
       purchaseCount,
-      allSpentMoney,
       profit,
       salesCount,
-      allEarnedMoney,
       userProfit: profit / 2,
       growPercent,
     }
