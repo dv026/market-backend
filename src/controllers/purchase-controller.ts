@@ -63,11 +63,7 @@ class PurchaseController {
     let enrichedPurchase: Partial<CarModel> = {
       status,
     }
-    if (status === PurchaseStatuses.DepositPaid) {
-      // enrichedPurchase.deposit = {
-      //   ...purchase.deposit,
-      //   canReturn: true
-      // };
+    if (status !== PurchaseStatuses.Future) {
       enrichedPurchase.fakeFee = {
         ...purchase.fakeFee,
         canReturn: this.hasFakeFee(purchase.fakeFee.rate),
