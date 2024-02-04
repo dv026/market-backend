@@ -13,7 +13,7 @@ export interface FeeModel {
   returned: Nullable<boolean>
 }
 
-export type PurchaseStatuse =
+export type PurchaseStatus =
   | 'future'
   | 'canceled'
   | 'depositPaid'
@@ -31,7 +31,7 @@ export interface PurchaseModel {
   price: Nullable<number>
   category: PurchaseCategory
   type: PurchaseType
-  status: PurchaseStatuse
+  status: PurchaseStatus
   soldPrice?: Nullable<number>
   commission?: FeeModel
   deposit?: FeeModel
