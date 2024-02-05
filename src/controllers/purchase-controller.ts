@@ -64,9 +64,11 @@ class PurchaseController {
       status,
     }
     if (status !== PurchaseStatuses.Future) {
-      enrichedPurchase.fakeFee = {
-        ...purchase.fakeFee,
-        canReturn: this.hasFakeFee(purchase.fakeFee.rate),
+      if (!purchase.fakeFee.returned) {
+        enrichedPurchase.fakeFee = {
+          ...purchase.fakeFee,
+          canReturn: this.hasFakeFee(purchase.fakeFee.rate),
+        }
       }
     }
 
