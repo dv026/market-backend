@@ -38,6 +38,8 @@ class PurchaseController {
     commission,
     deposit,
     type,
+    transmission,
+    vin,
   }: CarModel) {
     return dbConnector.purchases.updateOne(
       { _id: new ObjectId(id) },
@@ -51,6 +53,8 @@ class PurchaseController {
           deposit,
           commission,
           type,
+          vin,
+          transmission,
         },
       }
     )

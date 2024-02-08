@@ -5,6 +5,8 @@ export interface CarModel extends PurchaseModel {
   model: Nullable<string>
   year: Nullable<number>
   mileage: Nullable<number>
+  transmission: Transmission
+  vin: Nullable<string>
 }
 
 export interface FeeModel {
@@ -25,6 +27,8 @@ export type PurchaseStatus =
 export type PurchaseType = 'commission' | 'auction'
 
 export type PurchaseCategory = 'appartment' | 'car'
+
+export type Transmission = 'AT' | 'MT'
 
 export interface PurchaseModel {
   id: string
