@@ -163,8 +163,19 @@ app.post(
   tryCatch(async (req, res) => {
     const data = req.body
 
+    if (!data.id) {
+      return res.json({
+        token: '',
+        error: 'not found id',
+      })
+    }
+
     const serverClient = StreamChat.getInstance(api_key, api_secret)
-    const token = serverClient.createToken(data.email)
+    await serverClient.upsertUser({
+      id: data.id,
+      role: 'admin',
+    })
+    const token = serverClient.createToken(data.id)
 
     return res.json({
       token,
@@ -185,6 +196,7 @@ app.listen(port, async () => {
 
   const serverClient = StreamChat.getInstance(api_key, api_secret)
   const token = serverClient.createToken('admin')
+
   client.connectUser({ id: 'admin' }, token)
 
   const channel = client.channel('messaging', 'ai_assistant')
