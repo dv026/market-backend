@@ -1,4 +1,7 @@
 export const routes = {
+  auth: {
+    login: '/login',
+  },
   request: {
     create: '/request',
     delete: '/request/:id',

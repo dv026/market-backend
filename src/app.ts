@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
 var cors = require('cors')
-
+import { StreamChat } from 'stream-chat'
 import express from 'express'
 
 import { routes } from './routes'
@@ -158,9 +158,42 @@ app.get(
   })
 )
 
+app.post(
+  routes.auth.login,
+  tryCatch(async (req, res) => {
+    const data = req.body
+
+    const serverClient = StreamChat.getInstance(api_key, api_secret)
+    const token = serverClient.createToken(data.email)
+
+    return res.json({
+      token,
+    })
+  })
+)
+
+const api_key = process.env.CHAT_API_KEY
+const api_secret = process.env.CHAT_API_SECRET
+
 app.listen(port, async () => {
-  if (url) {
-    await dbConnector.connect(url)
-  }
+  // if (url) {
+  //  await dbConnector.connect(url)
+  // }
   console.log('server started')
+
+  const client = new StreamChat(api_key, { allowServerSideConnect: true })
+
+  const channel = client.channel('messaging', 'ai_assistant')
+
+  await channel.watch()
+
+  channel.on('message.new', (event) => {
+    if (event.message.text.includes('help')) {
+      channel.sendMessage({
+        text: 'Hepl is coming',
+      })
+    }
+  })
+
+  console.log('connected')
 })
