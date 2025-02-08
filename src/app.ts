@@ -197,16 +197,18 @@ app.listen(port, async () => {
   const serverClient = StreamChat.getInstance(api_key, api_secret)
   const token = serverClient.createToken('admin')
 
-  client.connectUser({ id: 'admin' }, token)
+  client.connectUser({ id: 'admin', name: 'AI Assistant' }, token)
 
-  const channel = client.channel('messaging', 'ai_assistant')
+  const channel = client.channel('messaging', 'ai_assistant1', {
+    name: 'AI Assistant',
+  })
 
   await channel.watch()
 
   channel.on('message.new', (event) => {
     if (event.message.text.includes('help')) {
       channel.sendMessage({
-        text: 'Hepl is coming',
+        text: 'Help is coming',
       })
     }
   })
