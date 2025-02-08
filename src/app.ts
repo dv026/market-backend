@@ -183,6 +183,10 @@ app.listen(port, async () => {
 
   const client = new StreamChat(api_key, { allowServerSideConnect: true })
 
+  const serverClient = StreamChat.getInstance(api_key, api_secret)
+  const token = serverClient.createToken('admin')
+  client.connectUser({ id: 'admin' }, token)
+
   const channel = client.channel('messaging', 'ai_assistant')
 
   await channel.watch()
