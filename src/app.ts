@@ -3,17 +3,19 @@ dotenv.config()
 var cors = require('cors')
 import { StreamChat } from 'stream-chat'
 import express from 'express'
-
+const fs = require('fs')
 import { routes } from './routes'
 import { tryCatch } from './utils/try-catch'
 import { errorMiddleware } from './middlewares/error-middleware'
 import { dbConnector } from './db-connector'
 import { purchaseController } from './controllers/purchase-controller'
 import { statsController } from './controllers/stats-controller'
+import path from 'path'
+// const multer = require('multer')
 
 const app = express()
 const port = 3000
-
+// app.use('/uploads', express.static('uploads'))
 const url = process.env.MONGODB_URL
 
 app.use(
@@ -206,10 +208,17 @@ app.listen(port, async () => {
   await channel.watch()
 
   channel.on('message.new', (event) => {
-    if (event.message.text.includes('help')) {
+    if (event.message.text.includes('Hello')) {
       channel.sendMessage({
-        text: 'Help is coming',
+        text: 'Good afternoon! How can I help you?',
       })
+    }
+    if (event.message.text.includes('check the distribution')) {
+      setTimeout(() => {
+        channel.sendMessage({
+          text: 'I prepared a file with data you requested and sent it to your email. Check it there!',
+        })
+      }, 1000)
     }
   })
 
